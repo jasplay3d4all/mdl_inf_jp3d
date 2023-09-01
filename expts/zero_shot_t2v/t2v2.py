@@ -1,0 +1,1 @@
+git clone -b dev https://github.com/camenduru/Text-To-Video-Finetuning

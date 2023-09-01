@@ -1,0 +1,25 @@
+module.pipeline_state = {
+    name: "single_state" - name of the module to handle this pipeline
+    cur_stage_idx: 0, - The stage to be processed by this pipeline
+    pipe_info:{label:"Social Media Post", id:"social_media_post"}, Name of this pipe. Currently used in UI for display
+    user_state:{info:{id:"JAYKANIDAN",},} - The User id for creation of separate workspace to be processed for each user
+
+Describing a configuration input:
+prompt:{val : "parameter value", label: "Prompt", show: true, type:"array", valid:{type:"range", min:1, max:5}},
+Different types: 
+    array - input string split by comma into array input | show: true
+    path - relative path to a file or folder | show: false
+    wrkflw_link - read input from upper component | show: false | val:{stg_idx: upper stage idx}
+        img_path:{val : {stg_idx:0, type:"array2idx", idx:0}, show: false, type:"wrkflw_link"},
+    prompt:{val : {stg_idx:0, type:"cfg2idx", idx:'prompt'}, show: false, type:"wrkflw_link"},
+
+Different valid: - Parameters required for doing validation checks
+    {type:"range", min: 1, max: 100}
+    {type:"array", list: [1, 2, 3, 4]}
+
+
+gpu_state:{ 
+    function: "gen_logo", // Name of the function to call
+    stage_status:"in_queue", // "pre_stage" "in_queue", "gpu_triggered", "error", "complete"
+    stage_progress: 0, // Percentage of task completion
+}

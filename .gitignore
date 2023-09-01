@@ -1,0 +1,10 @@
+**/logs
+**/output
+**/__pycache__
+**/*.png
+**/*.jpg
+# ./share_vol/data_io/
+# ./ext_lib
+share_vol/models/
+share_vol/test/
+test/pipeline/node_modules/

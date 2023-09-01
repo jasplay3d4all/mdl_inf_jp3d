@@ -1,0 +1,6 @@
+# Ignore everything
+*
+
+# But not these files...
+!.gitignore
+!data_created_by_gpu.txt
