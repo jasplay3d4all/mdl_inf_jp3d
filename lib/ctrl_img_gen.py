@@ -1,12 +1,15 @@
 if __name__ == "__main__":
     import sys
-    path = '/workspace/source_code/mdl_inf_jp3d'
-    # path = '/home/source_code/mdl_inf_jp3d/'
+    # path = '/workspace/source_code/mdl_inf_jp3d'
+    path = '/home/source_code/mdl_inf_jp3d/'
     sys.path.insert(0, path)
 
-from lib.hf.sd_ctrl import sd_model as sd_ctrl_mdl
+# from lib.hf.sd_ctrl import sd_model as sd_ctrl_mdl
 # from lib.hf.sd_upscaler import sdx4upscaler
-from lib.hf.sdxl import create_controlnet, create_base_model, gen_one_img as gen_one_img_sdxl
+# from lib.hf.sdxl import create_controlnet, create_base_model, gen_one_img as gen_one_img_sdxl
+
+from lib.sd_mdl.sd_api import sd_model
+
 from lib.utils_plg import mem_plg, anno_plg
 from PIL import Image, ImageOps
 import numpy as np
@@ -55,9 +58,7 @@ def vdo_ctrl_gen(theme, prompt, prompt_2, op_fld, ctrl_vdo_path, control_type="p
     # Create SD model for the given theme and n_prompt
     # sd_model, processor = create_model(theme, n_prompt, control_type, safety_checker)
 
-    lora_path = "./share_vol/models/lora/cyborg_style_xl-alpha.safetensors"
-    pipe, refiner, processor = create_controlnet(control_type=control_type, lora_path=None, lora_scale=0.8)
-
+    sd_mdl = sd_model(theme=theme, control_type=control_type)
     reader = imageio.get_reader(ctrl_vdo_path)
     fps = reader.get_meta_data()['fps']
     print("Output array ", fps)
@@ -79,11 +80,17 @@ def vdo_ctrl_gen(theme, prompt, prompt_2, op_fld, ctrl_vdo_path, control_type="p
                 height, width, _ = vdo_frm.shape
                 # output_info_list = gen_one_img(sd_model, processor, 
                 #         control_type, None, vdo_frm, None, height, width, seed, num_images)
-                output_info_list = gen_one_img_sdxl(pipe, refiner, processor, prompt, prompt_2, None, vdo_frm, 
-                    op_fld=None, control_type=control_type, n_prompt=n_prompt, height=1024, width=1024,
-                    seed=seed, num_images=1, num_inf_steps=50,)
-                output_info_list[0]['image'].save(os.path.join(op_fld, "vdo_ctrl", str(i).zfill(5)+".png"))
-                writer.append_data(np.array(output_info_list[0]['image']))
+                
+                # output_info_list = gen_one_img_sdxl(pipe, refiner, processor, prompt, prompt_2, None, vdo_frm, 
+                #     op_fld=None, control_type=control_type, n_prompt=n_prompt, height=1024, width=1024,
+                #     seed=seed, num_images=1, num_inf_steps=50,)
+                # output_info_list[0]['image'].save(os.path.join(op_fld, "vdo_ctrl", str(i).zfill(5)+".png"))
+                # writer.append_data(np.array(output_info_list[0]['image']))
+                image = sd_mdl.gen_img(prompt=prompt, n_prompt=n_prompt, height=height, width=width, seed=seed, 
+                    ctrl_img=vdo_frm, num_images=1) #init_image=None, mask_image=None, ctrl_img_path=None, 
+                image[0].save(os.path.join(op_fld, "vdo_ctrl", str(i).zfill(5)+".png"))
+                writer.append_data(np.array(image[0]))
+                
             i += 1
             if(i >= 1000):
                 break
@@ -106,7 +113,7 @@ def vdo_ctrl_gen(theme, prompt, prompt_2, op_fld, ctrl_vdo_path, control_type="p
     # ffmpegio.video.write(vdo_filepath, fps, gen_frame_arr, overwrite=True) #, pix_fmt_in='yuv420p')
 
     if(collect_cache):
-        del sd_model
+        del sd_mdl
         mem_plg.collect_cache()
     return [{'path':vdo_filepath}]
 
@@ -115,13 +122,14 @@ def vdo_ctrl_gen(theme, prompt, prompt_2, op_fld, ctrl_vdo_path, control_type="p
 # Run this code from  /home/source_code/mdl_inf_jp3d/
 
 if __name__ == "__main__":
-    theme = "people_lifelike"
+    theme = "people" #"sdxl_base" #"people_lifelike"
     op_fld = "./share_vol/test/img3"
     # prompt = "Strawberry icecream with chocolate sauce placed on a wall in new york"
     # logo_path = "./share_vol/data_io/inp/logo_mealo.png" # edge_inv.png" # 
     logo_path = "./share_vol/data_io/inp/0.jpeg" # edge_inv.png" # 
 
     ctrl_vdo_path = "./share_vol/data_io/inp/ctrl.mp4" # edge_inv.png" # 
+    control_type="midasdepth" #"depth"
 
     # prompt = "cyborg style, cyborg, 3d style,3d render,cg,beautiful, school girl, fully clothed, looking at viewer, long braid, sparkling eyes, cyborg , mechanical limbs, cyberpunk, \
     #     cute gloves 3d_render_style_xl this has good facial feature holding weapons and gadget in each hand"
@@ -130,12 +138,12 @@ if __name__ == "__main__":
     # gen_img(theme, prompt, op_fld, control_type="midasdepth", ctrl_img_path=logo_path, n_prompt="", height=512, width=512, 
     #     seed=-1, num_images=1, safety_checker=None, collect_cache=True)
 
-    # vdo_ctrl_gen(theme, prompt, op_fld, ctrl_vdo_path, control_type="pidiedge")
+    # vdo_ctrl_gen(theme, prompt, op_fld, ctrl_vdo_path, control_type="pidiedge") 
 
     prompt = "cyborg_style_xl 1boy, science fiction, glowing, full body, humanoid robot, blue eyes, cable, mechanical parts, spine, armor, power armor, standing, robot, cyberpunk, scifi, , "
     prompt_2 = "cyborg_style_xl, high quality, high resolution, dslr, 8k, 4k, ultrarealistic, realistic,perfecteyes"
     n_prompt = "drawing, painting, illustration, rendered, low quality, low resolution"
-    vdo_ctrl_gen(theme, prompt, prompt_2, op_fld, ctrl_vdo_path, control_type="depth", n_prompt=n_prompt, seed=123456)
+    vdo_ctrl_gen(theme, prompt, prompt_2, op_fld, ctrl_vdo_path, control_type=control_type, n_prompt=n_prompt, seed=123456)
     
     logo_path = "./share_vol/data_io/inp/logo_mealo.png" # edge_inv.png" # 
     # gen_logo(logo_path, theme=theme, prompt=prompt, op_fld=op_fld, control_type="pidiedge")
@@ -155,3 +163,6 @@ if __name__ == "__main__":
     #     cute gloves 3d_render_style_xl this has good facial feature holding weapons and gadget in each hand"
     # gen_img(theme, prompt, op_fld, control_type="pidiedge", ctrl_img_path=logo_path, n_prompt="", height=512, width=512, 
     #     seed=-1, num_images=1, safety_checker=None, collect_cache=True)
+
+    # lora_path = "./share_vol/models/lora/cyborg_style_xl-alpha.safetensors"
+    # pipe, refiner, processor = create_controlnet(control_type=control_type, lora_path=None, lora_scale=0.8)

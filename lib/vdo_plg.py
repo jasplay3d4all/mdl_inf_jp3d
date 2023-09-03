@@ -139,7 +139,7 @@ def gen_vdo_ado_speech(theme, prompt, img_path, motion_template, op_fld,
     if(bg_music_prompt):
         # Generate music for this clip
         music_path = os.path.join(op_fld, "music")
-        gen_ado_path = gen_music([bg_music_prompt], num_sec, music_path, melody_path=melody_path)
+        gen_ado_path = gen_music(bg_music_prompt, num_sec, music_path, melody_path=melody_path)
         ado_clip_lst.append(AudioFileClip(gen_ado_path[0]['path']))
 
     if(voice_text):

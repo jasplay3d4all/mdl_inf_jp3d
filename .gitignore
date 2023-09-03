@@ -1,6 +1,7 @@
 **/logs
 **/output
 **/__pycache__
+**/.DS_Store
 **/*.png
 **/*.jpg
 # ./share_vol/data_io/

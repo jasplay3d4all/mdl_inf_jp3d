@@ -121,7 +121,10 @@ cd pose_est_3d/OSX/
 bash install.sh # mmpose installaion takes a long time. But is cached.
     - Does not install trimeshopen so commented out
     - Install pytorch required version and then install the mmcv: 
-    
+
+## Github checkin
+In VS code bottom left there is a account icon above setting account and it is logged into the github.
+
 
 install models from civitai:
 ----------------------------

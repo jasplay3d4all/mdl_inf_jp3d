@@ -70,6 +70,8 @@ def gen_music(bg_music_prompt, num_sec, music_path, melody_path=None, musicgen_m
     # 'melody' - text to music and text+melody to music, 'medium', 
     # 'large' - text to music only
     # 
+
+    bg_music_prompt = [bg_music_prompt]
     music_gen = MusicGen.get_pretrained(musicgen_mdl)
     music_gen.set_generation_params(duration=num_sec)
     # if(bg_music_prompt == None):

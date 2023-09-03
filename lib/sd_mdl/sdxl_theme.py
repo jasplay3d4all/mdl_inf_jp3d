@@ -21,7 +21,7 @@ model_name_mapper = {
     "canny":[0.5, "diffusers/controlnet-canny-sdxl-1.0"],
     "depth_small":[0.5, "diffusers/controlnet-depth-sdxl-1.0-small"],
     "depth_mid":[0.5, "diffusers/controlnet-depth-sdxl-1.0-mid"],
-        "depth":[0.5, "diffusers/controlnet-depth-sdxl-1.0-small"], #"diffusers/controlnet-depth-sdxl-1.0"],
+    "depth":[0.5, "diffusers/controlnet-depth-sdxl-1.0-small"], #"diffusers/controlnet-depth-sdxl-1.0"],
 }
 ctrl_type_to_processor_id = {
             # "pidiedge" : "softedge_pidinet", "hededge" : "softedge_hedsafe",
@@ -43,18 +43,19 @@ ctrl_type_to_processor_id = {
 # https://civitai.com/api/download/models/130743 - no words - YQXL_CrvArchitecture
 # https://civitai.com/api/download/models/136677 - smxl - Snow mountain XL
 
+# common_lora_list = ["more_details.safetensors"] # "add_detail.safetensors",
+# commom_ti_list = ["BadDream.pt", "easynegative.safetensors","ng_deepnegative_v1_75t.pt",  # "fastnegative.pt", 
+#         "negative_hand-neg.pt", "UnrealisticDream.pt", "CyberRealistic_Negative-neg.pt"]
+# common_n_prompt = "BadDream, easynegative, ng_deepnegative_v1_75t, verybadimagenegative_v1.3, \
+#         negative_hand, negative_hand-neg, UnrealisticDream, CyberRealistic_Negative, CyberRealistic_Negative-neg"
+
 theme_to_model_map = {
-    "sdxl_base": {
+    'sdxl_base': {
         "base_model": "stabilityai/stable-diffusion-xl-base-1.0" , 
         "vae": "madebyollin/sdxl-vae-fp16-fix",
-        "lora_list":[],
+        "lora_list":["./cyborg_style_xl-alpha.safetensors"],
         "use_refiner":True,
-        "n_prompt": "(deformed iris, deformed pupils, semi-realistic, cgi, 3d, render, sketch, \
-            cartoon, drawing, anime), text, cropped, out of frame, worst quality, low quality, jpeg artifacts, \
-            ugly, duplicate, morbid, mutilated, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, \
-            mutation, deformed, blurry, dehydrated, bad anatomy, bad proportions, extra limbs, cloned face, \
-            disfigured, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, \
-            fused fingers, too many fingers, long neck, BadDream, UnrealisticDream",
-        "prompt":"RAW photo, subject, (high detailed skin:1.2), 8k uhd, dslr, soft lighting, high quality, film grain, Fujifilm XT3"
+        "n_prompt": "drawing, painting, illustration, rendered, low quality, low resolution",
+        # "prompt":"RAW photo, subject, (high detailed skin:1.2), 8k uhd, dslr, soft lighting, high quality, film grain, Fujifilm XT3"
     }
 }

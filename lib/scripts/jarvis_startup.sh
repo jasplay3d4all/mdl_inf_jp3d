@@ -8,16 +8,11 @@ apt-get update && apt-get install ffmpeg libsm6 libxext6 zip  -y
 apt install python3-pip python-is-python3 -y
 apt-get install iputils-ping net-tools -y
 pip install eventlet python-socketio einops scipy moviepy ffmpegio imageio[ffmpeg] timm==0.6.13 basicsr annotator mediapipe omegaconf jupyter-archive
-# Node Installation
-cd ./test/pipeline/
-curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && apt-get install -y nodejs
-npm install supervisor socket.io socket.io-client 
-npm install supervisor concurrently -g 
-cd ../../
 
 # GPU installation
 pip install xformers safetensors insightface==0.7.3 onnxruntime gdown controlnet-aux
-pip install accelerate transformers==v4.31.0 diffusers accelerate==0.20.3
+pip install accelerate transformers==v4.31.0 accelerate==0.20.3
+pip install -U diffusers
 # cd ~/source_code/mdl_inf_jp3d/
 
 ## audio
@@ -26,6 +21,13 @@ pip install -U audiocraft  # stable release
 
 cd ext_lib/SadTalker
 pip install -r requirements.txt
+cd ../../
+
+# Node Installation
+cd ./test/pipeline/
+curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && apt-get install -y nodejs
+npm install supervisor socket.io socket.io-client 
+npm install supervisor concurrently -g 
 cd ../../
 
 export HF_HOME="./share_vol/models/hf_cache/"

@@ -1,6 +1,6 @@
 
-from sd15_ctrl import sd15_model
-from sdxl_ctrl import sdxl_model
+from .sd15_ctrl import sd15_model
+from .sdxl_ctrl import sdxl_model
 
 
 class sd_model:
@@ -9,9 +9,9 @@ class sd_model:
             self.model = sdxl_model(theme, control_type, safety_checker)
         else:
             self.model = sd15_model(theme, control_type, safety_checker)
-    
-    def gen_img(**kwargs, op_fld=None):
+        return
 
+    def gen_img(self, op_fld=None, **kwargs):
         op_lst = self.model.gen_img(**kwargs)
         if(op_fld):
             os.makedirs(op_fld, exist_ok=True)
