@@ -80,8 +80,6 @@ cd ../../../
 # TTS
 pip install TTS mecab-python3 unidic-lite
 
-export HF_HOME="./share_vol/models/hf_cache/huggingface/"
-
 # Install using scripts
 sh ./lib/scripts/jarvis_startup.sh
 export HF_HOME="./share_vol/models/hf_cache/"
@@ -96,7 +94,7 @@ probably have separate scripts for nodejs and gpu
 Docker command:
 <!-- https://docs.runpod.io/docs/customize-a-template
 https://github.com/runpod/runpodctl/blob/main/doc/runpodctl_start.md Not working fully -->
-bash -c 'cd /workspace/source_code/mdl_inf_jp3d && sh ./lib/scripts/jarvis_startup.sh && /start.sh'
+bash -c 'cd /workspace/source_code/mdl_inf_jp3d/; sh ./lib/scripts/jarvis_startup.sh & cd / && ./start.sh'
 
 
 # First time/ One Time scripts
@@ -118,9 +116,12 @@ concurrently "cd website_jp3d/;node node_lib/main.js" "cd mdl_inf_jp3d/; python 
 
 pip install chumpy numpy==1.23 ultralytics
 cd pose_est_3d/OSX/
+    - Install pytorch required version and then install the mmcv: 
+pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0 --extra-index-url https://download.pytorch.org/whl/cu113
+bash install.sh
+
 bash install.sh # mmpose installaion takes a long time. But is cached.
     - Does not install trimeshopen so commented out
-    - Install pytorch required version and then install the mmcv: 
 
 ## Github checkin
 In VS code bottom left there is a account icon above setting account and it is logged into the github.

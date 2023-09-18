@@ -8,11 +8,12 @@ apt-get update && apt-get install ffmpeg libsm6 libxext6 zip  -y
 apt install python3-pip python-is-python3 -y
 apt-get install iputils-ping net-tools -y
 pip install eventlet python-socketio einops scipy moviepy ffmpegio imageio[ffmpeg] timm==0.6.13 basicsr annotator mediapipe omegaconf jupyter-archive
+pip install invisible-watermark>=0.2.0
 
 # GPU installation
 pip install xformers safetensors insightface==0.7.3 onnxruntime gdown controlnet-aux
-pip install accelerate transformers==v4.31.0 accelerate==0.20.3
-pip install -U diffusers
+pip install accelerate transformers==v4.31.0 accelerate==0.20.3 opencv-python
+pip install -U diffusers==v0.20.0
 # cd ~/source_code/mdl_inf_jp3d/
 
 ## audio

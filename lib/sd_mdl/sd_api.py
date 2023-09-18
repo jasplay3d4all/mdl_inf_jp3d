@@ -1,31 +1,34 @@
 
 from .sd15_ctrl import sd15_model
 from .sdxl_ctrl import sdxl_model
+import os
+import numpy as np
+from PIL import Image
 
 
 class sd_model:
-    def __init__(self, theme, control_type="inpaint", safety_checker=False):
+    def __init__(self, theme, control_type=None, safety_checker=False):
         if("sdxl" in theme):
             self.model = sdxl_model(theme, control_type, safety_checker)
         else:
             self.model = sd15_model(theme, control_type, safety_checker)
         return
 
-    def gen_img(self, op_fld=None, **kwargs):
-        op_lst = self.model.gen_img(**kwargs)
+    def gen_img(self, prompt, ctrl_img_path=None, ctrl_img=None, op_fld=None, seed=-1, **kwargs):
+        if(ctrl_img_path):
+            ctrl_img = np.array(Image.open(ctrl_img_path).convert("RGB"))/255.0
+        # if(mask_img_path):
+        #     mask_img = np.array(Image.open(mask_img_path))/255.0
+        op = self.model.gen_img(prompt=prompt, ctrl_img=ctrl_img, seed=seed, **kwargs)
         if(op_fld):
             os.makedirs(op_fld, exist_ok=True)
-            op_str_lst = []
-            for idx, op in enumerate(op_lst):
-                op_name = os.path.join(op_fld, str(idx).zfill(5)+".png")
-                op['image'].save(op_name)
-                op_str_lst.append({'seed':op['seed'], 'path':op_name})
-            return op_str_lst
+            op_name = os.path.join(op_fld, "image.png")
+            op["image"].save(op_name)
+            return [{"seed":op["seed"], "path":op_name}]
         else:
-            return op_lst
+            return op
 
-def gen_one_img(theme, control_type="inpaint", safety_checker=False ):
-    return 
+
 
 if __name__ == "__main__":
     theme = "people"

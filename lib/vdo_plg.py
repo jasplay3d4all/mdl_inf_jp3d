@@ -7,7 +7,7 @@ from moviepy.editor import ImageClip, CompositeVideoClip, CompositeAudioClip, \
 import numpy as np
 from PIL import Image
 import os
-from lib.ctrl_img_gen import gen_img, gen_inpaint_filler
+from lib.img_plg import gen_one_img
 from lib.audio_plg import gen_music, gen_speech
 
 
@@ -48,8 +48,11 @@ def gen_pan_video(img_path, theme, prompt, op_fld, template="bottom_right",
 
     # Generate the image by inpainting
     img_fld = os.path.join(op_fld, "img")
-    output_info_list = gen_img(theme, prompt, op_fld, control_type="inpaint", ctrl_img=img_mask, height=img_mask.shape[1], 
-        width=img_mask.shape[0])
+    # output_info_list = gen_img(theme, prompt, op_fld, control_type="inpaint", ctrl_img=img_mask, height=img_mask.shape[1], 
+    #     width=img_mask.shape[0])
+    print("Image mask ", img_mask.shape)
+    output_info_list = gen_one_img(theme, prompt, op_fld=op_fld, control_type="inpaint", ctrl_img=img_mask, 
+        height=img_mask.shape[-3], width=img_mask.shape[-2])
     vdo_img_path = output_info_list[0]['path']
 
     # img_pth = os.path.join(img_fld, "00000.png")
@@ -74,10 +77,10 @@ def gen_pan_video(img_path, theme, prompt, op_fld, template="bottom_right",
     return [{'path':vdo_filepath}]
 
 def zoom_in_out(t):
-    return 1 + 0.5*np.sin(2*np.pi*t/6)
+    return 1 + 0.6*np.sin(2*np.pi*t/6)
 
 def gen_zoom_video(img_path, theme, prompt, op_fld, zoom_in=True, num_sec=4, fps=24, vdo_wth=1280, vdo_hgt=720, 
-    scale=1.6, pos_x='center', pos_y='center', is_gif=False): # [0, 0.5, 1.0]'center', 'left', 'right', 'top', 'bottom'
+    scale=1.64, pos_x='center', pos_y='center', is_gif=False): # [0, 0.5, 1.0]'center', 'left', 'right', 'top', 'bottom'
     # Read input image
     (inp_wth_x, inp_hgt_y, img) = read_img(img_path)
     # Generate mask for inpainting
@@ -95,8 +98,11 @@ def gen_zoom_video(img_path, theme, prompt, op_fld, zoom_in=True, num_sec=4, fps
     # vdo_img_path = img_pth
 
     # TBD: replace ctrl_img_path with ctrl_img 
-    output_info_list = gen_img(theme, prompt, op_fld, control_type="inpaint", ctrl_img=img_mask, height=img_mask.shape[1], 
-        width=img_mask.shape[0])
+    # output_info_list = gen_img(theme, prompt, op_fld, control_type="inpaint", ctrl_img=img_mask, height=img_mask.shape[1], 
+    #     width=img_mask.shape[0])
+    print("Image mask ", img_mask.shape)
+    output_info_list = gen_one_img(theme, prompt, op_fld=op_fld, control_type="inpaint", ctrl_img=img_mask, 
+        height=img_mask.shape[-3], width=img_mask.shape[-2])
     vdo_img_path = output_info_list[0]['path']
 
     vdo_path = os.path.join(op_fld, "vdo")
@@ -199,14 +205,14 @@ if __name__ == "__main__":
     ref_vdo = "./ext_lib/articulated_motion/SadTalker/examples/ref_video/WDA_AlexandriaOcasioCortez_000.mp4"
     op_fld = "./share_vol/test/"
     theme = "people"
-    # gen_zoom_video(img_path, theme, "hello", op_fld, zoom_in=True, num_sec=4, fps=1, vdo_wth=1280, vdo_hgt=720, 
-    #     scale=1.5, pos_x='right', pos_y='bottom', is_gif=False)
+    gen_zoom_video(img_path, theme, "hello", op_fld, zoom_in=True, num_sec=4, fps=1, vdo_wth=1280, vdo_hgt=720, 
+        scale=1.6, pos_x='right', pos_y='bottom', is_gif=False)
     # gen_pan_video(img_path, theme, "hello", op_fld, template="left",  num_sec=4, fps=1, vdo_wth=1920, vdo_hgt=1080, 
-    #     pan_speed=50, is_gif=True)
+    #     pan_speed=50, is_gif=False)
     vdo_file_lst = ["./share_vol/test/stg1/mrg/generated.mp4", "./share_vol/test/vdo/mrg/generated.mp4"]
     # concat_vdo(vdo_file_lst, op_fld)
 
     # vdo_path = "./share_vol/test/stg1/mrg/generated.mp4"
     vdo_path = "./share_vol/test/vdo/mrg/generated.mp4"
-    add_img_to_vdo(vdo_path, img_path, op_fld, pos_x="right", pos_y="center", scale=0.5)
+    # add_img_to_vdo(vdo_path, img_path, op_fld, pos_x="right", pos_y="center", scale=0.5)
 

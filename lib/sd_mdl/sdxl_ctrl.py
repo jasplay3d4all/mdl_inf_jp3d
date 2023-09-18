@@ -89,16 +89,24 @@ class sdxl_model:
         self.high_noise_frac = 0.8
         return
     
-    def gen_img(self, prompt, n_prompt="", height=1024, width=1024, seed=-1, 
-        init_image=None, mask_image=None, ctrl_img_path=None, ctrl_img=None, num_images=1):
+    def gen_img(self, prompt, ctrl_img=None, n_prompt="", height=1024, width=1024, seed=-1, 
+        num_images=1):
         # print("Min and max ", np.max(ctrl_img))
-        generator = seed_to_generator(seed)
+        seed, generator = seed_to_generator(seed)
 
         if(self.control_type == "inpaint"):
-            return self.gen_inpaint_img(init_image, mask_image, generator, prompt, n_prompt, height, width)
+            mask_image = np.zeros_like(ctrl_img[0])
+            mask_image[ctrl_img[0]==-1] = 1
+            mask_image = Image.fromarray((255 * mask_image).astype(np.uint8))
+            ctrl_img[0][ctrl_img[0]==-1] = 0
+            print("Mask and image shape ", ctrl_img.shape)
+            ctrl_img = Image.fromarray((255*ctrl_img[0]).astype(np.uint8))
+            image = self.gen_inpaint_img(ctrl_img, mask_image, generator, prompt, n_prompt, height, width)
+            return {"seed":seed, "image":image[0]}
 
         if(self.processor):
-            image = self.gen_ctrl_img(ctrl_img_path, ctrl_img, generator, prompt, n_prompt, height, width)
+            ctrl_img = Image.fromarray(ctrl_img)
+            image = self.gen_ctrl_img(ctrl_img, generator, prompt, n_prompt, height, width)
         else:
             image = self.pipe(prompt, prompt_2=prompt, num_inference_steps=self.num_inf_steps, 
                 denoising_end=self.high_noise_frac, generator=generator, negative_prompt=n_prompt, negative_prompt_2=n_prompt,
@@ -109,24 +117,21 @@ class sdxl_model:
                 denoising_start=self.high_noise_frac, negative_prompt=n_prompt, negative_prompt_2=n_prompt,
                 generator=generator).images
 
-        return image
+        return {"seed":seed, "image":image[0]}
     def gen_inpaint_img(self, init_image, mask_image, generator, prompt, n_prompt, height, width):
         image = self.pipe(prompt=prompt, prompt_2=prompt, image=init_image, mask_image=mask_image,
-            num_inference_steps=num_inf_base_steps, denoising_end=denoising_end,
+            num_inference_steps=self.num_inf_steps, denoising_end=self.high_noise_frac,
             generator=generator, negative_prompt=n_prompt,  negative_prompt_2=n_prompt,
             height=height, width=width, output_type="latent" if self.refiner else "pil",).images
         if(self.refiner):
             image = self.refiner(prompt=prompt, prompt_2=prompt, image=image, mask_image=mask_image,
-                num_inference_steps=num_inf_refiner_steps, denoising_start=denoising_start,
+                num_inference_steps=self.num_inf_steps, denoising_start=self.high_noise_frac,
                 generator=generator, negative_prompt=n_prompt,  negative_prompt_2=n_prompt,
                 height=height, width=width).images
         return image
     
-    def gen_ctrl_img(self, ctrl_img_path, ctrl_img, generator, prompt, n_prompt, height, width):
-        if(ctrl_img_path):
-            ctrl_img = Image.open(ctrl_img_path).convert("RGB")#.resize((512, 512))
-        else:
-            ctrl_img = Image.fromarray(ctrl_img)
+    def gen_ctrl_img(self, ctrl_img, generator, prompt, n_prompt, height, width):
+        
         ctrl_img = self.processor(ctrl_img, to_pil=True)
         # generate image
         image = self.pipe(prompt, prompt_2=prompt, controlnet_conditioning_scale=model_name_mapper[self.control_type][0], 

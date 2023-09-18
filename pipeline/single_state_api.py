@@ -7,13 +7,14 @@ import urllib.request
 from lib.utils_plg.dict_obj import dict2obj, obj2dict
 from lib.utils_plg.linux_cmd import upload_tmpfiles, download_link
 
-from lib.ctrl_img_gen import gen_img, gen_inpaint_filler # gen_logo, 
+# from lib.img_plg import gen_img, gen_inpaint_filler # gen_logo, 
+from lib.img_plg import gen_one_img, vdo_ctrl_gen, gen_inpaint_filler
 # from core_blks.vdo_gen import gen_vdo, gen_logo_vdo "gen_logo_vdo":gen_logo_vdo, "gen_vdo":gen_vdo,
 from lib.audio_plg import gen_music, gen_speech
 # from lib.annotated_motion import talking_head
 from lib.vdo_plg import gen_vdo_ado_speech, gen_zoom_video, gen_pan_video, concat_vdo, add_img_to_vdo
-from lib.talking_head_api import talking_head
-name_to_fn_mapper = { "gen_img":gen_img, "gen_inpaint_filler":gen_inpaint_filler, # "gen_logo":gen_logo, 
+from lib.annotated_motion import talking_head
+name_to_fn_mapper = { "gen_one_img":gen_one_img, "gen_inpaint_filler":gen_inpaint_filler, # "gen_logo":gen_logo, 
     "gen_music":gen_music, "gen_speech":gen_speech, "talking_head":talking_head,
     "gen_vdo_ado_speech": gen_vdo_ado_speech, "gen_zoom_video":gen_zoom_video, "gen_pan_video":gen_pan_video,
     "concat_vdo":concat_vdo, "add_img_to_vdo":add_img_to_vdo

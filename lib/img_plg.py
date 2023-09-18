@@ -18,6 +18,10 @@ from controlnet_aux.processor import Processor
 import ffmpegio, imageio
 import cv2
 
+def gen_one_img(theme, prompt, control_type=None, safety_checker=None, **kwargs):
+    sd_mdl = sd_model(theme=theme, control_type=control_type, safety_checker=safety_checker)
+    return sd_mdl.gen_img(prompt, **kwargs)
+
 def gen_inpaint_filler(theme, prompt, img_path, imgfmt_list, op_fld):
     # Handling images smaller than 512x512. Should resize to the smallest dimension
     # Add support fo gif with little zoom and pan effects
@@ -39,26 +43,31 @@ def gen_inpaint_filler(theme, prompt, img_path, imgfmt_list, op_fld):
     for imgfmt in imgfmt_list:
         img_shape = imgfmt_to_imgdim_mapper[imgfmt]
         out_wth_x, out_hgt_y = img_shape
-        inp_pos_x = int((out_wth_x - inp_wth_x)/2.0)
-        inp_pos_y = int((out_hgt_y - inp_hgt_y)/2.0)
+        min_dim = min(out_wth_x, out_wth_y)
+        res = cv2.resize(img, dsize=(min_dim, min_dim), interpolation=cv2.INTER_CUBIC)
+
+        inp_pos_x = int((out_wth_x - min_dim)/2.0)
+        inp_pos_y = int((out_hgt_y - min_dim)/2.0)
         msk_img = -1*np.ones((1, out_hgt_y, out_wth_x, 3))
-        msk_img[0, inp_pos_y:inp_pos_y+inp_hgt_y, inp_pos_x:inp_pos_x+inp_wth_x, :] = img
+        msk_img[0, inp_pos_y:inp_pos_y+inp_hgt_y, inp_pos_x:inp_pos_x+inp_wth_x, :] = res
 
         op_fmt_fld = os.path.join(op_fld, imgfmt)
-        out_img_info = gen_img(theme, prompt, op_fmt_fld, control_type="inpaint", ctrl_img=msk_img, 
-            n_prompt="", height=out_hgt_y, width=out_wth_x)
+        # out_img_info = gen_img(theme, prompt, op_fmt_fld, control_type="inpaint", ctrl_img=msk_img, 
+        #     n_prompt="", height=out_hgt_y, width=out_wth_x)
+        out_img_info = gen_one_img(theme, prompt, op_fld=op_fmt_fld, control_type="inpaint", ctrl_img=img_mask, 
+            height=img_mask.shape[1], width=img_mask.shape[0])
         out_img_info_lst.append(out_img_info[0])
         
     return out_img_info_lst
 
 
-def vdo_ctrl_gen(theme, prompt, prompt_2, op_fld, ctrl_vdo_path, control_type="pidiedge",  
+def vdo_ctrl_gen(theme, prompt, op_fld, ctrl_vdo_path, control_type="pidiedge",  
      n_prompt="", seed=-1, safety_checker=None, collect_cache=True):
 
     # Create SD model for the given theme and n_prompt
     # sd_model, processor = create_model(theme, n_prompt, control_type, safety_checker)
 
-    sd_mdl = sd_model(theme=theme, control_type=control_type)
+    sd_mdl = sd_model(theme=theme, control_type=control_type, safety_checker=None)
     reader = imageio.get_reader(ctrl_vdo_path)
     fps = reader.get_meta_data()['fps']
     print("Output array ", fps)
@@ -86,10 +95,10 @@ def vdo_ctrl_gen(theme, prompt, prompt_2, op_fld, ctrl_vdo_path, control_type="p
                 #     seed=seed, num_images=1, num_inf_steps=50,)
                 # output_info_list[0]['image'].save(os.path.join(op_fld, "vdo_ctrl", str(i).zfill(5)+".png"))
                 # writer.append_data(np.array(output_info_list[0]['image']))
-                image = sd_mdl.gen_img(prompt=prompt, n_prompt=n_prompt, height=height, width=width, seed=seed, 
+                op = sd_mdl.gen_img(prompt=prompt, n_prompt=n_prompt, height=height, width=width, seed=seed, 
                     ctrl_img=vdo_frm, num_images=1) #init_image=None, mask_image=None, ctrl_img_path=None, 
-                image[0].save(os.path.join(op_fld, "vdo_ctrl", str(i).zfill(5)+".png"))
-                writer.append_data(np.array(image[0]))
+                op["image"].save(os.path.join(op_fld, "vdo_ctrl", str(i).zfill(5)+".png"))
+                writer.append_data(np.array(op["image"]))
                 
             i += 1
             if(i >= 1000):
@@ -138,17 +147,17 @@ if __name__ == "__main__":
     # gen_img(theme, prompt, op_fld, control_type="midasdepth", ctrl_img_path=logo_path, n_prompt="", height=512, width=512, 
     #     seed=-1, num_images=1, safety_checker=None, collect_cache=True)
 
-    # vdo_ctrl_gen(theme, prompt, op_fld, ctrl_vdo_path, control_type="pidiedge") 
+    vdo_ctrl_gen(theme, prompt, op_fld, ctrl_vdo_path, control_type="pidiedge") 
 
     prompt = "cyborg_style_xl 1boy, science fiction, glowing, full body, humanoid robot, blue eyes, cable, mechanical parts, spine, armor, power armor, standing, robot, cyberpunk, scifi, , "
     prompt_2 = "cyborg_style_xl, high quality, high resolution, dslr, 8k, 4k, ultrarealistic, realistic,perfecteyes"
     n_prompt = "drawing, painting, illustration, rendered, low quality, low resolution"
-    vdo_ctrl_gen(theme, prompt, prompt_2, op_fld, ctrl_vdo_path, control_type=control_type, n_prompt=n_prompt, seed=123456)
+    # vdo_ctrl_gen(theme, prompt, prompt_2, op_fld, ctrl_vdo_path, control_type=control_type, n_prompt=n_prompt, seed=123456)
     
     logo_path = "./share_vol/data_io/inp/logo_mealo.png" # edge_inv.png" # 
     # gen_logo(logo_path, theme=theme, prompt=prompt, op_fld=op_fld, control_type="pidiedge")
 
-    theme = "people"
+    theme = "people" #  "sdxl_base" #
     # prompt = "instagram photo, closeup face photo of 18 y.o swedish woman in dress, beautiful face, makeup, night city street, bokeh, motion blur"
     # prompt = "closeup face photo of caucasian man in black clothes, night city street, bokeh"
     prompt = "polaroid photo, night photo, photo of 24 y.o beautiful woman, pale skin, bokeh, motion blur"
@@ -161,8 +170,8 @@ if __name__ == "__main__":
 
     # prompt = "cyborg style, cyborg, 3d style,3d render,cg,beautiful, goddess Kaali, looking at viewer, long braid, sparkling eyes, cyborg , mechanical limbs, cyberpunk, \
     #     cute gloves 3d_render_style_xl this has good facial feature holding weapons and gadget in each hand"
-    # gen_img(theme, prompt, op_fld, control_type="pidiedge", ctrl_img_path=logo_path, n_prompt="", height=512, width=512, 
-    #     seed=-1, num_images=1, safety_checker=None, collect_cache=True)
+    # gen_one_img(theme, prompt, control_type="pidiedge", ctrl_img_path=logo_path, op_fld=op_fld,  
+    #     n_prompt="", height=1024, width=1024, seed=-1, num_images=1, safety_checker=None)
 
     # lora_path = "./share_vol/models/lora/cyborg_style_xl-alpha.safetensors"
     # pipe, refiner, processor = create_controlnet(control_type=control_type, lora_path=None, lora_scale=0.8)

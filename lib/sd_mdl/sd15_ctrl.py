@@ -4,7 +4,6 @@ import os
 from PIL import Image
 import  numpy as np
 import cv2
-import random
 import imageio
 
 from diffusers import ControlNetModel, UniPCMultistepScheduler
@@ -66,7 +65,7 @@ class sd15_model:
                 else:
                     # https://discuss.huggingface.co/t/how-to-enable-safety-checker-in-stable-diffusion-2-1-pipeline/31286
                     pipe = StableDiffusionControlNetPipeline.from_pretrained(
-                        base_model, controlnet=controlnet_list, safety_checker=safety_checker, torch_dtype=torch.float16)
+                        base_model, controlnet=controlnet_list[0], safety_checker=safety_checker, torch_dtype=torch.float16)
                 # print("Model created ", len(controlnet_list))
                 self.use_ctrl_net = True
             else:
@@ -116,6 +115,7 @@ class sd15_model:
 
         self.n_prompt = n_prompt
         self.guidance_scale = 10
+        self.control_type = control_type
 
         # self.prompt = ''
         return
@@ -127,23 +127,24 @@ class sd15_model:
     #     self.n_prompt += n_prompt
     #     return
 
-    def gen_img(self, prompt, n_prompt="", height=1024, width=1024, seed=-1, 
-        init_image=None, mask_image=None, ctrl_img_path=None, ctrl_img=None, num_images=1):
+    def gen_img(self, prompt, ctrl_img=None, n_prompt="", height=512, width=512, seed=-1, 
+        num_images=1):
         if(self.use_ctrl_net and ctrl_img is None):
             print("Error: Expected a control image")
             return -1
 
-        generator = seed_to_generator(seed)
+        seed, generator = seed_to_generator(seed)
         n_prompt = self.n_prompt + n_prompt
 
         if(self.use_ctrl_net):
-            # print("Input image dimension ", bg_dpt_mask.shape, len(img_lst))
-            if(ctrl_img_path):
-                ctrl_img = Image.open(ctrl_img_path).convert("RGB")#.resize((512, 512))
-            else:
-                ctrl_img = Image.fromarray(ctrl_img)
-            ctrl_img = self.processor(ctrl_img, to_pil=True)
-            image = self.pipe(prompt, image=[ctrl_img], 
+            if(self.control_type != "inpaint"):
+                ctrl_img = [self.processor((255*ctrl_img).astype(np.uint8), to_pil=True)]
+            # else:
+            #     mask_image = -1*np.ones((out_hgt_y, out_wth_x, 3))
+            #     mask_image[inp_pos_y:inp_pos_y+inp_hgt_y, inp_pos_x:inp_pos_x+inp_wth_x, :] = ctrl_image
+            #     ctrl_image = mask_image
+
+            image = self.pipe(prompt, image=ctrl_img, 
                 num_inference_steps=self.num_inf_steps,
                 generator=generator, negative_prompt=self.n_prompt,
                 controlnet_conditioning_scale=self.controlnet_conditioning_scale[0],
@@ -152,4 +153,4 @@ class sd15_model:
             image = self.pipe(prompt, num_inference_steps=self.num_inf_steps,
                 generator=generator, negative_prompt=self.n_prompt,
                 height=height, width=width, guidance_scale=self.guidance_scale).images
-        return image
+        return {"seed":seed, "image":image[0]}

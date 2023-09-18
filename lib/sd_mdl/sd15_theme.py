@@ -63,7 +63,7 @@ common_n_prompt = "BadDream, easynegative, ng_deepnegative_v1_75t, verybadimagen
         negative_hand, negative_hand-neg, UnrealisticDream, CyberRealistic_Negative, CyberRealistic_Negative-neg"
 theme_to_model_map = {
     "people": {
-        "base_model": "nextphoto_v30.safetensors", # "lifeLikeDiffusionEthnicitiesSupportedNative_lifeLikeDiffusionV30.safetensors", # "SG161222/Realistic_Vision_V4.0", # "nextphoto_v30.safetensors", # "cyberdelia/CyberRealistic" , #
+        "base_model": "runwayml/stable-diffusion-v1-5", #"nextphoto_v30.safetensors", # "lifeLikeDiffusionEthnicitiesSupportedNative_lifeLikeDiffusionV30.safetensors", # "SG161222/Realistic_Vision_V4.0", # "nextphoto_v30.safetensors", # "cyberdelia/CyberRealistic" , #
         "vae": None,
         "lora_list":[],
         "ti_list":[],

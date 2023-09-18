@@ -1,5 +1,6 @@
 import os
 import torch
+import random
 
 from diffusers import AutoencoderKL
 model_base_path = "./share_vol/models/base_mdl/"
@@ -18,7 +19,7 @@ def load_vae(vae_path):
 def seed_to_generator(seed):
     if seed == -1:
         seed = random.randint(0, 65535)
-    return torch.Generator(device="cpu").manual_seed(seed)
+    return seed, torch.Generator(device="cpu").manual_seed(seed)
 
 
 def config_lora(pipe, lora_path, lora_scale):

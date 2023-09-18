@@ -88,4 +88,4 @@ app = socketio.WSGIApp(sio, static_files=static_files)
 #     sio.emit('generated_image', {'status': 'image generated'})
 
 if __name__ == '__main__':
-    eventlet.wsgi.server(eventlet.listen(('', 80)), app)
+    eventlet.wsgi.server(eventlet.listen(('', 8000)), app)
