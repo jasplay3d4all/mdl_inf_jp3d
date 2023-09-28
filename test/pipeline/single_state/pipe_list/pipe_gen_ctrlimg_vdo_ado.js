@@ -9,9 +9,9 @@ module.exports = function () {
         user_state:{
             info:{
                 id:"JAYKANIDAN",
-                attachments: [{url:"./share_vol/data_io/inp/infinity_white.png", 
+                attachments: [{url:"./share_vol/data_io/inp/jasplay_letters.jpg", 
                                filename:'00000.png', width: 512, height: 512, content_type: 'image/png'}], // path of the file with which we are going to ctrl the image generation 
-               // attachments: [{url:"http://127.0.0.1:80/static/inp/logo_mealo.png", filename: 'logo_mealo.png', width: 512, height: 512, content_type:'image/png'}],
+                //attachments: [{url:"http://127.0.0.1:80/static/inp/logo_mealo.png", filename: 'logo_mealo.png', width: 512, height: 512, content_type:'image/png'}],
             },
             gpu_state:{} //Not sure whether it is required. Probably future use
         },
@@ -38,7 +38,7 @@ module.exports = function () {
                    op_fld:{val : "./img/", show: false, type:"path"},
             },
             gpu_state:{ 
-              function: "gen_img", // Name of the function to call
+              function: "gen_one_img", // Name of the function to call
               stage_status:"in_queue", // "pre_stage" "in_queue", "gpu_triggered", "error", "complete"
               stage_progress: 0, // Percentage of task completion
               output:['https://tmpfiles.org/1900371/generated123.mp4',

@@ -43,19 +43,19 @@ def gen_inpaint_filler(theme, prompt, img_path, imgfmt_list, op_fld):
     for imgfmt in imgfmt_list:
         img_shape = imgfmt_to_imgdim_mapper[imgfmt]
         out_wth_x, out_hgt_y = img_shape
-        min_dim = min(out_wth_x, out_wth_y)
+        min_dim = min(out_wth_x, out_hgt_y)
         res = cv2.resize(img, dsize=(min_dim, min_dim), interpolation=cv2.INTER_CUBIC)
 
         inp_pos_x = int((out_wth_x - min_dim)/2.0)
         inp_pos_y = int((out_hgt_y - min_dim)/2.0)
         msk_img = -1*np.ones((1, out_hgt_y, out_wth_x, 3))
-        msk_img[0, inp_pos_y:inp_pos_y+inp_hgt_y, inp_pos_x:inp_pos_x+inp_wth_x, :] = res
+        msk_img[0, inp_pos_y:inp_pos_y+min_dim, inp_pos_x:inp_pos_x+min_dim, :] = res
 
         op_fmt_fld = os.path.join(op_fld, imgfmt)
         # out_img_info = gen_img(theme, prompt, op_fmt_fld, control_type="inpaint", ctrl_img=msk_img, 
         #     n_prompt="", height=out_hgt_y, width=out_wth_x)
-        out_img_info = gen_one_img(theme, prompt, op_fld=op_fmt_fld, control_type="inpaint", ctrl_img=img_mask, 
-            height=img_mask.shape[1], width=img_mask.shape[0])
+        out_img_info = gen_one_img(theme, prompt, op_fld=op_fmt_fld, control_type="inpaint", ctrl_img=msk_img, 
+            height=msk_img.shape[1], width=msk_img.shape[0])
         out_img_info_lst.append(out_img_info[0])
         
     return out_img_info_lst

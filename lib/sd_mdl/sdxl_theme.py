@@ -53,7 +53,7 @@ theme_to_model_map = {
     'sdxl_base': {
         "base_model": "stabilityai/stable-diffusion-xl-base-1.0" , 
         "vae": "madebyollin/sdxl-vae-fp16-fix",
-        "lora_list":["./cyborg_style_xl-alpha.safetensors"],
+        "lora_list":[], # "./cyborg_style_xl-alpha.safetensors"
         "use_refiner":True,
         "n_prompt": "drawing, painting, illustration, rendered, low quality, low resolution",
         # "prompt":"RAW photo, subject, (high detailed skin:1.2), 8k uhd, dslr, soft lighting, high quality, film grain, Fujifilm XT3"

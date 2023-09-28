@@ -4,7 +4,7 @@ module.exports = function () {
     module.pipeline_state = {
         name: "single_state",
         cur_stage_idx: 0,
-        pipe_info:{label:"Social Media Post", id:"social_media_post"}, //Not sure whether it is required
+        pipe_info:{label:"gen_txt_2vdo_pipe", id:"sgen_txt_2vdo_pipe"}, //Not sure whether it is required
         user_state:{
             info:{
                 id:"JAYKANIDAN",
@@ -21,15 +21,15 @@ module.exports = function () {
             // seed=-1, num_images=1, safety_checker=None, collect_cache=True)
               config:{ 
                    theme:{val : "people", label: "Theme", show: true, type:"default"},
-                   prompt:{val : " A modern art masterpiece, RAW photo, landscape, old fashion, nature, high detailed, masterpiece, best quality, 8k uhd, high quality, film grain, Fujifilm XT3",
+                   prompt:{val : " RAW photo, one boy medidating in an open lawn with sunrays falling on him, looking at me, with a cute smile, calm face, wearing yellow tshirt and greay pants ,8k uhd, dslr, soft lighting, high quality, film grain, Fujifilm XT3",
                        label: "Prompt", show: true, type:"default"},
-                   seed: {val:1914929369, label: "seed", show: true, type: "default"},
-                   n_prompt: {val: "illustration, 3d, 2d, painting, cartoons, sketch, (worst quality:1.9), (low quality:1.9), (normal quality:1.9), lowres, ((monochrome)), ((grayscale)), (cropped), oversaturated, imperfect, (bad hands), signature, watermark, username, artist name, error, bad image, bad photo, (worst quality, low quality",
-                              label: "n_prompt", show: true, type: "default"},
+                   //seed: {val:1914929369, label: "seed", show: true, type: "default"},
+                  // n_prompt: {val: "illustration, 3d, 2d, painting, cartoons, sketch, (worst quality:1.9), (low quality:1.9), (normal quality:1.9), lowres, ((monochrome)), ((grayscale)), (cropped), oversaturated, imperfect, (bad hands), signature, watermark, username, artist name, error, bad image, bad photo, (worst quality, low quality",
+                    //          label: "n_prompt", show: true, type: "default"},
                    op_fld:{val : "./img/", show: false, type:"path"},
             },
             gpu_state:{ 
-              function: "gen_img", // Name of the function to call
+              function: "gen_one_img", // Name of the function to call
               stage_status:"in_queue", // "pre_stage" "in_queue", "gpu_triggered", "error", "complete"
               stage_progress: 0, // Percentage of task completion
               output:['https://tmpfiles.org/1900371/generated123.mp4',
@@ -42,7 +42,7 @@ module.exports = function () {
                 theme:{val : {stg_idx:0, type:"cfg2idx", idx:'theme'}, show: false, type:"wrkflw_link"},
                 prompt:{val : {stg_idx:0, type:"cfg2idx", idx:'prompt'}, show: false, type:"wrkflw_link"},
                 motion_template:{val:"zoom_out", label: "Motion Template", show: true, type:"default"},
-                //bg_music_prompt:{val:"a piano and cello duet playing a sad chambers music",label: "BG Music", show: true, type:"default"},
+                bg_music_prompt:{val:" soft, sustained synth pads or gentle piano chords to create a calming and tranquil backdrop. Incorporate slow, deep, and rhythmic tones to encourage a meditative breathing pattern. Keep the composition minimalist and repetitive",label: "BG Music", show: true, type:"default"},
                 //voice_text:{val:"parrots chirping.",label: "Voice Text", show: true, type:"default"},
                 num_sec:{val:6, type: "default", label:"num_sec",show: false},
                 op_fld:{val : "./vdo/", show: false, type:"path"},
@@ -64,11 +64,11 @@ module.exports = function () {
                 prompt:{val : {stg_idx:0, type:"cfg2idx", idx:'prompt'}, show: false, type:"wrkflw_link"},
                 motion_template:{val:"zoom_in", label: "Motion Template", show: true, type:"default"},
                 //bg_music_prompt:{val:"a piano and cello duet playing a sad chambers music",label: "BG Music", show: true, type:"default"},
-                //voice_text:{val:"parrots chirping.",label: "Voice Text", show: true, type:"default"},
+                voice_text:{val:"Oooohhhmmm, ooohhhmmm, ooohhhmmm, ooohhhmmm,ooohhhmmmm,ooohhhmmm",label: "Voice Text", show: true, type:"default"},
                 num_sec:{val:6, type: "default", label:"num_sec",show: false},
                 op_fld:{val : "./vdo/", show: false, type:"path"},
                 fps:{val:8, label: "fps",type: "default", show: false},
-                //history_prompt:{val: "v2/en_speaker_9", label:"history_prompt", type: "default", show: false},
+                history_prompt:{val: "v2/en_speaker_9", label:"history_prompt", type: "default", show: false},
                 //is_gif:{val:true, label: "gif_Image", show: false, type:"default"},
             },
             gpu_state:{ 
