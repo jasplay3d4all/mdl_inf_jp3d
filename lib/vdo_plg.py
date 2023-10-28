@@ -80,7 +80,7 @@ def zoom_in_out(t):
     return 1 + 0.6*np.sin(2*np.pi*t/6)
 
 def gen_zoom_video(img_path, theme, prompt, op_fld, zoom_in=True, num_sec=4, fps=24, vdo_wth=1280, vdo_hgt=720, 
-    scale=1.64, pos_x='center', pos_y='center', is_gif=False): # [0, 0.5, 1.0]'center', 'left', 'right', 'top', 'bottom'
+    scale=1.6, pos_x='center', pos_y='center', is_gif=False): # [0, 0.5, 1.0]'center', 'left', 'right', 'top', 'bottom'
     # Read input image
     (inp_wth_x, inp_hgt_y, img) = read_img(img_path)
     # Generate mask for inpainting
