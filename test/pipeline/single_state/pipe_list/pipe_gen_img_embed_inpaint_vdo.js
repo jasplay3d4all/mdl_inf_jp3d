@@ -16,7 +16,7 @@ module.exports = function () {
             },
             gpu_state:{} //Not sure whether it is required. Probably future use
         },
-        stage_state:[{
+        stage_state:[
             {
             // Stage 0: Generate the different dimensions for different social media format
             // gen_inpaint_filler(theme, prompt, img_path, imgfmt_list, op_fld)
