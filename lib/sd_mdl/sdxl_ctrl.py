@@ -9,7 +9,7 @@ import imageio
 
 from diffusers import StableDiffusionXLPipeline, StableDiffusionXLImg2ImgPipeline, \
     StableDiffusionXLInpaintPipeline, StableDiffusionXLControlNetPipeline, \
-    DiffusionPipeline
+    DiffusionPipeline, AutoPipelineForInpainting
 from diffusers.utils import load_image
 from diffusers import ControlNetModel, UniPCMultistepScheduler
 from controlnet_aux.processor import Processor
@@ -53,8 +53,11 @@ class sdxl_model:
         self.processor = None
         # Base pipe
         if(control_type=="inpaint"):
-            self.pipe = StableDiffusionXLInpaintPipeline.from_pretrained(theme_cfg["base_model"], 
-                    torch_dtype=torch.float16, vae=self.vae, use_safetensors=True)
+            # self.pipe = StableDiffusionXLInpaintPipeline.from_pretrained(theme_cfg["base_model"], 
+            #         torch_dtype=torch.float16, vae=self.vae, use_safetensors=True)
+            self.pipe = AutoPipelineForInpainting.from_pretrained("diffusers/stable-diffusion-xl-1.0-inpainting-0.1", 
+                torch_dtype=torch.float16, variant="fp16")
+
         elif(control_type):
             controlnet = ControlNetModel.from_pretrained(model_name_mapper[control_type][1], torch_dtype=torch.float16)
             self.pipe = StableDiffusionXLControlNetPipeline.from_pretrained(theme_cfg["base_model"],
@@ -123,6 +126,12 @@ class sdxl_model:
             num_inference_steps=self.num_inf_steps, denoising_end=self.high_noise_frac,
             generator=generator, negative_prompt=n_prompt,  negative_prompt_2=n_prompt,
             height=height, width=width, output_type="latent" if self.refiner else "pil",).images
+        
+        # steps between 15 and 30 work well for us # make sure to use `strength` below 1.0
+        # image = self.pipe(prompt=prompt, prompt_2=prompt, image=init_image, mask_image=mask_image, guidance_scale=8.0,
+        #     num_inference_steps=20, strength=0.99, generator=generator,
+        #     negative_prompt=n_prompt,  negative_prompt_2=n_prompt,
+        #     height=height, width=width, output_type="latent" if self.refiner else "pil",).images
         if(self.refiner):
             image = self.refiner(prompt=prompt, prompt_2=prompt, image=image, mask_image=mask_image,
                 num_inference_steps=self.num_inf_steps, denoising_start=self.high_noise_frac,

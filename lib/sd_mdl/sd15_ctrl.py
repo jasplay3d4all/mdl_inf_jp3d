@@ -32,7 +32,7 @@ def disabled_safety_checker(images, clip_input):
         return images, False
 
 class sd15_model:
-    def __init__(self, theme, control_type=None,  safety_checker=False):
+    def __init__(self, theme, control_type=None,  safety_checker=None):
 
         # print("Input args ", theme, prompt)
         model_map = theme_to_model_map[theme] 
@@ -60,22 +60,22 @@ class sd15_model:
                 if(os.path.isfile(os.path.join(model_base_path, base_model))):
                     model_path = os.path.join(model_base_path, base_model)
                     pipe = StableDiffusionControlNetPipeline.from_single_file(
-                        model_path, controlnet=controlnet_list[0], safety_checker=safety_checker, torch_dtype=torch.float16)
+                        model_path, controlnet=controlnet_list[0], torch_dtype=torch.float16)
                     # print("The model loaded from file ", base_model)
                 else:
                     # https://discuss.huggingface.co/t/how-to-enable-safety-checker-in-stable-diffusion-2-1-pipeline/31286
                     pipe = StableDiffusionControlNetPipeline.from_pretrained(
-                        base_model, controlnet=controlnet_list[0], safety_checker=safety_checker, torch_dtype=torch.float16)
+                        base_model, controlnet=controlnet_list[0], torch_dtype=torch.float16)
                 # print("Model created ", len(controlnet_list))
-                self.use_ctrl_net = True
+                # self.use_ctrl_net = True
             else:
                 if(os.path.isfile(base_model)):
                     pipe = StableDiffusionPipeline.from_single_file(
-                        base_model, safety_checker=safety_checker, torch_dtype=torch.float16) #revision="fp16", 
+                        base_model, torch_dtype=torch.float16) #revision="fp16", 
                 else:
                     pipe = StableDiffusionPipeline.from_pretrained(
-                        base_model, safety_checker=safety_checker, torch_dtype=torch.float16) #revision="fp16", 
-                self.use_ctrl_net = False
+                        base_model, torch_dtype=torch.float16) #revision="fp16", 
+                # self.use_ctrl_net = False
 
             self.lora_base_path = lora_base_path
             alpha_wgt = 0.8
@@ -106,8 +106,9 @@ class sd15_model:
                             
             pipe.scheduler = UniPCMultistepScheduler.from_config(pipe.scheduler.config)
             # pipe.scheduler = EulerAncestralDiscreteScheduler.from_config(pipe.scheduler.config)
-            if(not safety_checker):
-                pipe.safety_checker = disabled_safety_checker            
+            # if(not safety_checker):
+            #     pipe.safety_checker = disabled_safety_checker
+            pipe.safety_checker = None
             return pipe, controlnet_conditioning_scale
         
         self.pipe, self.controlnet_conditioning_scale = gen_pipe()
@@ -129,14 +130,14 @@ class sd15_model:
 
     def gen_img(self, prompt, ctrl_img=None, n_prompt="", height=512, width=512, seed=-1, 
         num_images=1):
-        if(self.use_ctrl_net and ctrl_img is None):
+        if(self.control_type and ctrl_img is None):
             print("Error: Expected a control image")
             return -1
 
         seed, generator = seed_to_generator(seed)
         n_prompt = self.n_prompt + n_prompt
 
-        if(self.use_ctrl_net):
+        if(self.control_type):
             if(self.control_type != "inpaint"):
                 ctrl_img = [self.processor((255*ctrl_img).astype(np.uint8), to_pil=True)]
             # else:

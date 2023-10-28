@@ -1,10 +1,10 @@
 Collecting invisible-watermark
   Using cached invisible_watermark-0.2.0-py3-none-any.whl (1.6 MB)
-Requirement already satisfied: PyWavelets>=1.1.1 in /opt/conda/lib/python3.10/site-packages (from invisible-watermark) (1.4.1)
-Requirement already satisfied: numpy>=1.17.0 in /opt/conda/lib/python3.10/site-packages (from invisible-watermark) (1.24.3)
-Requirement already satisfied: torch in /opt/conda/lib/python3.10/site-packages (from invisible-watermark) (2.0.1)
 Requirement already satisfied: opencv-python>=4.1.0.25 in /opt/conda/lib/python3.10/site-packages (from invisible-watermark) (4.8.0.76)
+Requirement already satisfied: torch in /opt/conda/lib/python3.10/site-packages (from invisible-watermark) (2.0.1)
+Requirement already satisfied: PyWavelets>=1.1.1 in /opt/conda/lib/python3.10/site-packages (from invisible-watermark) (1.4.1)
 Requirement already satisfied: Pillow>=6.0.0 in /opt/conda/lib/python3.10/site-packages (from invisible-watermark) (9.4.0)
+Requirement already satisfied: numpy>=1.17.0 in /opt/conda/lib/python3.10/site-packages (from invisible-watermark) (1.24.3)
 Requirement already satisfied: filelock in /opt/conda/lib/python3.10/site-packages (from torch->invisible-watermark) (3.9.0)
 Requirement already satisfied: typing-extensions in /opt/conda/lib/python3.10/site-packages (from torch->invisible-watermark) (4.5.0)
 Requirement already satisfied: sympy in /opt/conda/lib/python3.10/site-packages (from torch->invisible-watermark) (1.12)

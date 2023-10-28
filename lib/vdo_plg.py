@@ -204,11 +204,11 @@ if __name__ == "__main__":
     img_path = "./share_vol/test/img/00001.png" # "./ext_lib/articulated_motion/SadTalker/examples/source_image/art_0.png"
     ref_vdo = "./ext_lib/articulated_motion/SadTalker/examples/ref_video/WDA_AlexandriaOcasioCortez_000.mp4"
     op_fld = "./share_vol/test/"
-    theme = "people"
-    gen_zoom_video(img_path, theme, "hello", op_fld, zoom_in=True, num_sec=4, fps=1, vdo_wth=1280, vdo_hgt=720, 
-        scale=1.6, pos_x='right', pos_y='bottom', is_gif=False)
-    # gen_pan_video(img_path, theme, "hello", op_fld, template="left",  num_sec=4, fps=1, vdo_wth=1920, vdo_hgt=1080, 
-    #     pan_speed=50, is_gif=False)
+    theme = "sdxl_base" #"people"
+    # gen_zoom_video(img_path, theme, "hello", op_fld, zoom_in=True, num_sec=4, fps=1, vdo_wth=1280, vdo_hgt=720, 
+    #     scale=1.6, pos_x='right', pos_y='bottom', is_gif=False)
+    gen_pan_video(img_path, theme, "cyber realistic girl ", op_fld, template="left",  num_sec=4, fps=1, vdo_wth=1920, vdo_hgt=1080, 
+        pan_speed=50, is_gif=False)
     vdo_file_lst = ["./share_vol/test/stg1/mrg/generated.mp4", "./share_vol/test/vdo/mrg/generated.mp4"]
     # concat_vdo(vdo_file_lst, op_fld)
 

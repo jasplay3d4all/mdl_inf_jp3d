@@ -119,6 +119,21 @@ cd pose_est_3d/OSX/
     - Install pytorch required version and then install the mmcv: 
 pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0 --extra-index-url https://download.pytorch.org/whl/cu113
 bash install.sh
+pip install numpy==1.23.1
+apt update
+wget https://github.com/mmatl/travis_debs/raw/master/xenial/mesa_18.3.3-0.deb
+dpkg -i ./mesa_18.3.3-0.deb || true
+apt install -f
+
+git clone https://github.com/mmatl/pyopengl
+cd pyopengl
+python setup.py install
+
+python demo.py --gpu 0 --img_path ./input.png --output_folder ../output/ --decoder_setting wo_decoder --pretrained_model_path ../pretrained_models/osx_l_wo_decoder.pth.tar
+'img', 'joint_img', 'smplx_joint_proj', 'smplx_mesh_cam', 'smplx_root_pose', 'smplx_body_pose', 'smplx_lhand_pose', 'smplx_rhand_pose', 'smplx_jaw_pose', 'smplx_shape', 'smplx_expr', 'cam_trans', 'lhand_bbox', 'rhand_bbox', 'face_bbox'
+
+
+
 
 bash install.sh # mmpose installaion takes a long time. But is cached.
     - Does not install trimeshopen so commented out
@@ -133,6 +148,10 @@ go to civitai / instert curl https://chrome.google.com/webstore/detail/curlwget/
 using that get the download command prompt 
 go to source folder cd source_code/mdl_inf_jp3d/share_vol/models/
 
+du -sh ~/.[^.]* - shows hidden folder
+du -sh ~/*
+/home/.local/share/tts - text2speech model size
+/home/.cache/huggingface/hub/* - huggingface models
 
 ./ext_lib/faceswap/lora/.
 Code Backup:
